@@ -1,0 +1,574 @@
+﻿<!DOCTYPE html>
+<html lang="no">
+<head>
+    <!--<link rel="stylesheet" type="text/css" href="Design.css">-->
+    <link rel="stylesheet" type="text/css" href="Designundersider.css">
+    <link rel="stylesheet" type="text/css" href="test.css">
+    <link rel="shortcut icon" href="logo.png" type="image/x-icon">
+    <title> Vikelva vannovervåking </title>
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+
+    <!-- Load an icon library -->
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css' integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
+
+    <!--Two column layout-->
+    <style>
+        .container {
+            display: -ms-grid;
+            display: grid;
+            -ms-grid-rows: (1fr)[2];
+            grid-template-rows: repeat(2, 1fr);
+            -ms-grid-columns: (1fr)[4];
+            grid-template-columns: repeat(4, 1fr);
+            width: 97vw;
+            height: 100vh;
+        }
+
+        @media screen and (max-width: 60em) {
+            .container {
+                -ms-grid-rows: (1fr)[4];
+                grid-template-rows: repeat(4, 1fr);
+            }
+        }
+
+        .grid-1 {
+            -ms-grid-column: 1;
+            grid-column-start: 1;
+            grid-column-end: 3;
+            -ms-grid-row: 1;
+            grid-row: 1;
+            text-align: center;
+        }
+
+        @media screen and (max-width: 60em) {
+            .grid-1 {
+                -ms-grid-column: 1;
+                grid-column-start: 1;
+                grid-column-end: 5;
+                -ms-grid-row: 1;
+                grid-row: 1;
+            }
+        }
+
+        .grid-2 {
+            -ms-grid-column: 3;
+            grid-column-start: 3;
+            grid-column-end: 5;
+            -ms-grid-row: 1;
+            grid-row: 1;
+            text-align: center;
+        }
+
+        @media screen and (max-width: 60em) {
+            .grid-2 {
+                -ms-grid-column: 1;
+                grid-column-start: 1;
+                grid-column-end: 5;
+                -ms-grid-row: 2;
+                grid-row: 2;
+            }
+        }
+
+        .grid-3 {
+            -ms-grid-column: 1;
+            grid-column-start: 1;
+            grid-column-end: 3;
+            -ms-grid-row: 2;
+            grid-row: 2;
+            text-align: center;
+        }
+
+        @media screen and (max-width: 60em) {
+            .grid-3 {
+                -ms-grid-column: 1;
+                grid-column-start: 1;
+                grid-column-end: 5;
+                -ms-grid-row: 3;
+                grid-row: 3;
+                ;
+            }
+        }
+
+        .grid-4 {
+            -ms-grid-column: 3;
+            grid-column-start: 3;
+            grid-column-end: 5;
+            -ms-grid-row: 2;
+            grid-row: 2;
+            text-align: center;
+        }
+
+        @media screen and (max-width: 60em) {
+            .grid-4 {
+                -ms-grid-column: 1;
+                grid-column-start: 1;
+                grid-column-end: 5;
+                -ms-grid-row: 4;
+                grid-row: 4;
+            }
+        }
+
+        .callout {
+            margin: 10px;
+        }
+
+        
+    </style>
+
+
+
+    <!--Fetch data and update interval-->
+
+    <script>
+        var labelsC = []
+        var valuesCond = []
+        var valuesTemp = []
+        var valuesPh = []
+        var valuesTur = []
+        function fetchAndDisplayDataFromTo() {
+            var tid = Math.floor(new Date().getTime() - 36000000)
+            fetch('https://vannovervakning.com/api/v1/measurements/4/' + tid)
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (result) {
+                    timestampToHoursAndMinutes(result);
+                    timestampToDate(result);
+
+                    var resTur = result.data.TURBIDITY.forEach(element => {
+                        valuesTur.push(element.value)
+                    });
+                    var resCond = result.data.CONDUCTIVITY.forEach(element => {
+                        valuesCond.push(element.value)
+                        labelsC.push(element.timeCreated)
+                    });
+                    var resPh = result.data.PH.forEach(element => {
+                        valuesPh.push(element.value)
+                    });
+                    var resTemp = result.data.TEMPERATURE.forEach(element => {
+                        valuesTemp.push(element.value)
+                    });
+
+                    labelsC.reverse()
+                    valuesCond.reverse()
+                    valuesPh.reverse()
+                    valuesTemp.reverse()
+                    valuesTur.reverse()
+
+                    for (i = 0; i < labelsC.length; i++) {
+                        labelsC[i] = timestampToDate(labelsC[i]) + " " + timestampToHoursAndMinutes(labelsC[i]);
+                    }
+
+                    var ctxTur = document.getElementById("myChartTur").getContext('2d');
+                    var myLineChart = new Chart(ctxTur, {
+                        type: 'line',
+                        data: {
+                            labels: labelsC,
+                            datasets: [{
+                                label: "turbiditet",
+                                borderColor: 'deepskyblue',
+                                data: valuesTur,
+                                fill: false,
+                            }]
+                        },
+                        options: {
+                            layout: {
+                                padding: {
+                                    bottom: 10
+
+                                }
+                            },
+                            elements: {
+                                line: {
+                                    tension: 0,
+                                },
+
+                            },
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        scaleOverride: true,
+                                        suggestedMin: 0,
+                                        suggestedMax: 10
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                    var ctxTemp = document.getElementById("myChartTemp").getContext('2d');
+                    var myLineChart = new Chart(ctxTemp, {
+                        type: 'line',
+                        data: {
+                            labels: labelsC,
+                            datasets: [{
+                                label: "tempratur",
+                                borderColor: 'deepskyblue',
+                                data: valuesTemp,
+                                fill: false,
+                            }]
+                        },
+                        options: {
+                            layout: {
+                                padding: {
+                                    bottom: 10
+
+                                }
+                            },
+                            elements: {
+                                line: {
+                                    tension: 0,
+                                },
+
+                            },
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        scaleOverride: true,
+                                        suggestedMin: -5,
+                                        suggestedMax: 15
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                    var ctxCond = document.getElementById("myChartCond").getContext('2d');
+                    var myLineChart = new Chart(ctxCond, {
+                        type: 'line',
+                        data: {
+                            labels: labelsC,
+                            datasets: [{
+                                label: "konduktivitet",
+                                borderColor: 'deepskyblue',
+                                data: valuesCond,
+                                fill: false,
+                            }]
+                        },
+                        options: {
+                            layout: {
+                                padding: {
+                                    bottom: 10
+
+                                }
+                            },
+                            elements: {
+                                line: {
+                                    tension: 0,
+                                },
+
+                            },
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        scaleOverride: true,
+                                        suggestedMin: 0,
+                                        suggestedMax: 5
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                    var ctxPh = document.getElementById("myChartPh").getContext('2d');
+                    var myLineChart = new Chart(ctxPh, {
+                        type: 'line',
+                        data: {
+                            labels: labelsC,
+                            datasets: [{
+                                label: "ph",
+                                borderColor: 'deepskyblue',
+                                data: valuesPh,
+                                fill: false,
+                            }]
+                        },
+                        options: {
+                            layout: {
+                                padding: {
+                                    bottom: 10
+
+                                }
+                            },
+                            elements: {
+                                line: {
+                                    tension: 0,
+                                },
+
+                            },
+                            scales: {
+                                yAxes: [{
+                                    ticks: {
+                                        scaleOverride: true,
+                                        suggestedMin: 0,
+                                        suggestedMax: 14
+                                    }
+                                }]
+                            }
+                        }
+                    });
+
+                });
+
+            myVar = setInterval("showTime()", 1800000); //oppdaterer grafen hver halvtime
+        }
+
+        //funksjon for oppdatering av graf
+        var data = [];
+        var myVar;
+        function showTime() {
+            var str = 'https://vannovervakning.com/api/v1/measurements/4/'
+            $.getJSON(str, function (data) {
+                $.each(data.data.TURBIDITY, function (i, f) {
+                    if (valuesTur.length > 20) {
+                        valuesTur.shift();
+                        valuesTur.push(f.value);
+                        labelsC.shift();
+                        labelsC.push(timestampToDate(f.timeCreated) + " " + timestampToHoursAndMinutes(f.timeCreated));
+                    } else { valuesTur.push(f.value); labelsC.push(timestampToDate(f.timeCreated) + " " + timestampToHoursAndMinutes(f.timeCreated)); }
+                });
+                $.each(data.data.PH, function (i, f) {
+                    if (valuesPh.length > 20) {
+                        valuesPh.shift();
+                        valuesPh.push(f.value);
+                    } else { valuesPh.push(f.value); }
+                });
+                $.each(data.data.CONDUCTIVITY, function (i, f) {
+                    if (valuesCond.length > 20) {
+                        valuesCond.shift();
+                        valuesCond.push(f.value);
+                    } else { valuesCond.push(f.value); }
+                });
+                $.each(data.data.TEMPERATURE, function (i, f) {
+                    if (valuesTemp.length > 20) {
+                        valuesTemp.shift();
+                        valuesTemp.push(f.value);
+                    } else { valuesTemp.push(f.value); }
+                });
+            });
+            var ctxTur = document.getElementById("myChartTur").getContext('2d');
+            var myLineChart = new Chart(ctxTur, {
+                type: 'line',
+                data: {
+                    labels: labelsC,
+                    datasets: [{
+                        label: "turbiditet",
+                        borderColor: 'deepskyblue',
+                        data: valuesTur,
+                        fill: false,
+                    }]
+                },
+                options: {
+                    layout: {
+                        padding: {
+                            bottom: 10
+
+                        }
+                    },
+                    elements: {
+                        line: {
+                            tension: 0,
+                        },
+
+                    },
+                    animation: {
+                        duration: 0 // general animation time
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                scaleOverride: true,
+                                suggestedMin: 0,
+                                suggestedMax: 10
+                            }
+                        }]
+                    }
+                }
+            });
+            var ctxTemp = document.getElementById("myChartTemp").getContext('2d');
+            var myLineChart = new Chart(ctxTemp, {
+                type: 'line',
+                data: {
+                    labels: labelsC,
+                    datasets: [{
+                        label: "tempratur",
+                        borderColor: 'deepskyblue',
+                        data: valuesTemp,
+                        fill: false,
+                    }]
+                },
+                options: {
+                    layout: {
+                        padding: {
+                            bottom: 10
+
+                        }
+                    },
+                    elements: {
+                        line: {
+                            tension: 0,
+                        },
+
+                    },
+                    animation: {
+                        duration: 0 // general animation time
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                scaleOverride: true,
+                                suggestedMin: -5,
+                                suggestedMax: 15
+                            }
+                        }]
+                    }
+                }
+            });
+            var ctxCond = document.getElementById("myChartCond").getContext('2d');
+            var myLineChart = new Chart(ctxCond, {
+                type: 'line',
+                data: {
+                    labels: labelsC,
+                    datasets: [{
+                        label: "konduktivitet",
+                        borderColor: 'deepskyblue',
+                        data: valuesCond,
+                        fill: false,
+                    }]
+                },
+                options: {
+                    layout: {
+                        padding: {
+                            bottom: 10
+
+                        }
+                    },
+                    elements: {
+                        line: {
+                            tension: 0,
+                        },
+
+                    },
+                    animation: {
+                        duration: 0 // general animation time
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                scaleOverride: true,
+                                suggestedMin: 0,
+                                suggestedMax: 5
+                            }
+                        }]
+                    }
+                }
+            });
+            var ctxPh = document.getElementById("myChartPh").getContext('2d');
+            var myLineChart = new Chart(ctxPh, {
+                type: 'line',
+                data: {
+                    labels: labelsC,
+                    datasets: [{
+                        label: "ph",
+                        borderColor: 'deepskyblue',
+                        data: valuesPh,
+                        fill: false,
+                    }]
+                },
+                options: {
+                    layout: {
+                        padding: {
+                            bottom: 10
+
+                        }
+                    },
+                    elements: {
+                        line: {
+                            tension: 0,
+                        },
+
+                    },
+                    animation: {
+                        duration: 0 // general animation time
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                scaleOverride: true,
+                                suggestedMin: 0,
+                                suggestedMax: 14
+                            }
+                        }]
+                    }
+                }
+            });
+
+        }
+
+        function timestampToHoursAndMinutes(timestamp) {
+            var javaScriptRelease = Date.parse(timestamp);
+            var date = new Date(javaScriptRelease);
+            var hours = date.getHours();
+            var minutes = date.getMinutes();
+            if (minutes < 10) {
+                minutes = '0' + date.getMinutes()
+            }
+            return hours + ":" + minutes;
+        }
+
+        function timestampToDate(timestamp) {
+            var javaScriptRelease = Date.parse(timestamp);
+            var date = new Date(javaScriptRelease);
+            return date.getDate() + "." + date.getMonth() + "." + date.getFullYear();
+        }
+    </script>
+
+</head>
+
+
+<body onload="fetchAndDisplayDataFromTo()">
+    
+    <!--Navigation Bar-->
+    <div class="navbaren">
+        <a href="index.html"><i class="fa fa-fw fa-home"></i> HJEM</a>
+        <a class="active" href="Sisteverdier.html"><i class="fas fa-clock"></i> SISTE MÅLINGER</a>
+        <a href="Konduktivitet.html"><i class="fab fa-cloudscale"></i> KONDUKTIVITET</a>
+        <a href="Turbiditet.html"><i class="fas fa-oil-can"></i> TURBIDITET</a>
+        <a href="pH.html"><i class="fas fa-flask"></i> PH</a>
+        <a href="Temperatur.html"><i class="fas fa-thermometer-half"></i> TEMPERATUR</a>
+        <a href="Omoss.html"><i class="fa fa-fw fa-envelope"></i> OM OSS</a>
+
+    </div>
+
+    <div class="header">
+        <h2>Siste målinger</h2>
+    </div>
+
+
+        <div class="container">
+            <div class="grid-1 callout primary">
+                TEMPERATUR
+                <p><canvas id="myChartTemp" width="140" height="70"></canvas> </p>             
+            </div>
+
+            <div class="grid-2 callout warning">
+                TURBIDITET
+                <p><canvas id="myChartTur" width="140" height="70"></canvas> </p>
+            </div>
+
+            <div class="grid-3 callout alert">
+                PH
+                <p><canvas id="myChartPh" width="140" height="70"></canvas> </p>
+            </div>
+
+            <div class="grid-4 callout success">
+                KONDUKTIVITET
+                <p><canvas id="myChartCond" width="140" height="70"></canvas> </p>
+            </div>
+        </div>
+
+
+
+</body>
+</html>

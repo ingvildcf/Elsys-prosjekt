@@ -1,0 +1,304 @@
+﻿<!DOCTYPE html>
+<html lang="no">
+<head>
+    <link rel="stylesheet" type="text/css" href="test.css">
+    <!--<link rel="stylesheet" type="text/css" href="Design.css">
+    <link rel="stylesheet" type="text/css" href="Designundersider.css">-->
+    <link rel="stylesheet" type="text/css" href="test.css">
+    <link rel="shortcut icon" href="wd.jpg" type="image/x-icon">
+    <title> Vikelva vannovervåking</title>
+
+
+    <link rel="stylesheet" type="text/css" href="cond.css">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker3.css" rel="stylesheet" id="bootstrap-css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+
+    <!-- Load an icon library -->
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css' integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
+
+    <!--Two column layout-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Create two unequal columns that floats next to each other */
+        .column {
+            float: left;
+            height: 100%;
+        }
+
+        .left {
+            width: 95%;
+            margin-left: 0px;
+            padding-left: 5%;
+        }
+
+        .right {
+            padding-left: 5%;
+            width: 50%;
+        }
+
+        /* Clear floats after the columns */
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+    </style>
+
+</head>
+
+
+
+
+<body>
+
+    <!--Navigation Bar-->
+
+    <div class="navbaren">
+        <a href="Nettside.html"><i class="fa fa-fw fa-home"></i> HJEM</a>
+        <a href="Sisteverdier.html"><i class="fa fa-fw fa-user"></i> SISTE MÅLINGER</a>
+        <a class="active" href="testkond.html"><i class="fab fa-cloudscale"></i> KONDUKTIVITET</a>
+        <a href="Turbiditet.html"><i class="fas fa-oil-can"></i> TURBIDITET</a>
+        <a href="pH.html"><i class="fas fa-flask"></i> PH</a>
+        <a href="Temperatur.html"><i class="fas fa-thermometer-half"></i> TEMPERATUR</a>
+        <a href="Omoss.html"><i class="fa fa-fw fa-envelope"></i> OM OSS</a>
+
+    </div>
+
+    <!--Fetch data and update interval-->
+
+    <script>
+        function fetchAndDisplayDataFromTo(from, to) {
+            fetch('https://vannovervakning.com/api/v1/measurements/4/' + from + '/' + to)
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (result) {
+                    timestampToHoursAndMinutes(result);
+                    timestampToDate(result);
+
+                    var labelsC = []
+                    var valuesC = []
+
+
+                    var res = result.data.CONDUCTIVITY.forEach(element => {
+                        valuesC.push(element.value)
+                        labelsC.push(element.timeCreated)
+                    });
+
+                    labelsC.reverse()
+                    valuesC.reverse()
+
+                    for (i = 0; i < labelsC.length; i++) {
+                        labelsC[i] = timestampToDate(labelsC[i]) + " " + timestampToHoursAndMinutes(labelsC[i]);
+                    }
+
+                    var ctx = document.getElementById("myChart111").getContext('2d');
+                    var myLineChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labelsC,
+                            datasets: [{
+                                label: "Konduktivitet",
+                                borderColor: 'deepskyblue',
+                                data: valuesC,
+                                fill: false,
+                            }]
+                        },
+                        options: {
+                            layout: {
+                                padding: {
+                                    bottom: 10
+
+                                }
+                            },
+                            elements: {
+                                line: {
+                                    tension: 0,
+                                },
+
+                            }
+                        }
+                    });
+
+                });
+        }
+
+
+        function timestampToHoursAndMinutes(timestamp) {
+            var javaScriptRelease = Date.parse(timestamp);
+            var date = new Date(javaScriptRelease);
+            var hours = date.getHours();
+            var minutes = date.getMinutes();
+            if (minutes < 10) {
+                minutes = '0' + date.getMinutes()
+            }
+            return hours + ":" + minutes;
+        }
+
+        function timestampToDate(timestamp) {
+            var javaScriptRelease = Date.parse(timestamp);
+            var date = new Date(javaScriptRelease);
+            return date.getDate() + "." + date.getMonth() + "." + date.getFullYear();
+        }
+    </script>
+
+    <script>
+
+        function tableInterval(from, to) {
+            var str = 'https://vannovervakning.com/api/v1/measurements/4/' + from + '/' + to
+            $("#userdata tr>td").remove();
+            var data = [];
+            var time = [];
+            var avrundetTid = [];
+
+            $(function () {
+                $.getJSON(str, function (data) {
+                    $.each(data.data.PH, function (i, f) {
+                        time = f.timeCreated.split("T");
+                        avrundetTid = time[1].split(":");
+                        var tblRow = "<tr>" + "<td>" + f.value + "</td>" +
+                            "<td>" + avrundetTid[0] + ":" + avrundetTid[1] + "</td>" + "</tr>"
+                        $(tblRow).appendTo("#userdata tbody");
+                    });
+                });
+            });
+        }
+
+    </script>
+
+
+    <div class="header">
+        <h2>KONDUKTIVITET</h2>
+    </div>
+
+    <div class="row">
+        <div class="column left" style="background-color:#fff;">
+            <h2>Graf</h2>
+            <div class="container9">
+                <div class="containerChart9">
+                    <canvas id="myChart111"></canvas>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="column right" style="background-color:#fff;">
+            <h2>Velg intervall</h2>
+            <div class="row">
+                <div class='col-sm-6'>
+                    <form>
+                        <div class="form-group">
+                            <div class='input-group date' id='datepickerC'>
+                                <input type='text' class="form-control" />
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js" defer></script>
+            <script>
+                function updateInterval() {
+                    from = $("#datepickerC").datepicker("getDate")
+                    to = $("#datepickerC2").datepicker("getDate")
+                    if (from !== null && to !== null) {
+                        fetchAndDisplayDataFromTo(from.getTime(), to.getTime() + (23 * 60 + 59) * 60 * 1000);
+                        tableInterval(from.getTime(), to.getTime() + (23 * 60 + 59) * 60 * 1000);
+                    }
+                }
+                $(function () {
+                    $('#datepickerC').datepicker({
+                        format: "dd/mm/yyyy",
+                        autoclose: true,
+                        todayHighlight: true,
+                        showOtherMonths: true,
+                        selectOtherMonths: true,
+                        autoclose: true,
+                        changeMonth: true,
+                        changeYear: true,
+                        orientation: "button"
+                    });
+                    $("#datepickerC").on("changeDate", function () {
+                        updateInterval();
+                    });
+                });
+            </script>
+            <div class="containerII">
+                <div class="row">
+                    <div class='col-sm-6'>
+                        <form>
+                            <div class="form-group">
+                                <div class='input-group date' id='datepickerC2'>
+                                    <input type='text' class="form-control" />
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js" defer></script>
+            <script>
+                $(function () {
+                    $('#datepickerC2').datepicker({
+                        format: "dd/mm/yyyy",
+                        autoclose: true,
+                        todayHighlight: true,
+                        showOtherMonths: true,
+                        selectOtherMonths: true,
+                        autoclose: true,
+                        changeMonth: true,
+                        changeYear: true,
+                        orientation: "button"
+                    });
+                    $("#datepickerC2").on("changeDate", function () {
+                        updateInterval();
+                    });
+                });
+            </script>
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js" defer></script>
+
+    </div>
+    <button onclick="showTable()" style="margin:0;">Vis tabell</button>
+    <button onclick="showTable()" style="margin:0;">sammenlign grafer</button>
+    <div style="display:none" id="myDiv">
+        <div class="wrapper">
+            <div class="profile">
+
+                <table id="userdata" border="2" style="float: none">
+                    <h2>Tabell</h2>
+                    <thead>
+                    <th>Verdi</th>
+                    <th>Tidspunkt</th>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTable() {
+            document.getElementById("myDiv").style.display = "block";
+        }
+    </script>
+
+</body>
+</html>

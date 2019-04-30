@@ -1,0 +1,455 @@
+﻿<!DOCTYPE html>
+<html lang="no">
+<head>
+    <!-- <script type="text/javascript" src="JavaScript1.js"></script> -->
+    <link rel="stylesheet" type="text/css" href="Design.css">
+    <link rel="stylesheet" type="text/css" href="Designundersider.css">
+    <link rel="stylesheet" type="text/css" href="test.css">
+    <link rel="shortcut icon" href="logo.png" type="image/x-icon">
+    <title> Vikelva vannovervåking </title>
+
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+    <!-- Load an icon library -->
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css' integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
+
+
+    <link rel="stylesheet" type="text/css" href="cond.css">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker3.css" rel="stylesheet" id="bootstrap-css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+
+    <!-- load table-to-pdf-converter -->
+    <script src="src/tableHTMLExport.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.4.1/jspdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/2.3.5/jspdf.plugin.autotable.min.js"></script>
+
+
+    <!--Two column layout-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Create two unequal columns that floats next to each other */
+        .column {
+            float: left;
+            height: 100%;
+        }
+
+        .left {
+            width: 95%;
+            margin-left: 0px;
+            padding-left: 5%;
+        }
+
+        .right {
+            padding-left: 5%;
+            width: 50%;
+        }
+
+        /* Clear floats after the columns */
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        table, td, th {
+            border: 1px solid black;
+            align-content: center;
+        }
+
+        table {
+            width: 70%;
+            align-content: center;
+        }
+
+        th {
+            height: 50px;
+            align-content: center;
+        }
+    </style>
+</head>
+
+
+
+
+<body>
+
+    <!--Navigation Bar-->
+
+    <div class="navbaren">
+        <a href="index.html"><i class="fa fa-fw fa-home"></i> HJEM</a>
+        <a href="Sisteverdier.html"><i class="fas fa-clock"></i> SISTE MÅLINGER</a>
+        <a href="Konduktivitet.html"><i class="fab fa-cloudscale"></i> KONDUKTIVITET</a>
+        <a class="active" href="Turbiditet.html"><i class="fas fa-oil-can"></i> TURBIDITET</a>
+        <a href="pH.html"><i class="fas fa-flask"></i> PH</a>
+        <a href="Temperatur.html"><i class="fas fa-thermometer-half"></i> TEMPERATUR</a>
+        <a href="Omoss.html"><i class="fa fa-fw fa-envelope"></i> OM OSS</a>
+
+    </div>
+
+    <!--Fetch data and update interval-->
+
+    <script>
+        function fetchAndDisplayDataFromTo(from, to) {
+            fetch('https://vannovervakning.com/api/v1/measurements/4/' + from + '/' + to)
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (result) {
+                    timestampToHoursAndMinutes(result);
+                    timestampToDate(result);
+
+                    var labelsC = []
+                    var valuesC = []
+                    var maxVerdi = 0;
+                    var minVerdi = 100;
+                    var gjennomsnitt = 0;
+
+                    var res = result.data.TURBIDITY.forEach(element => {
+                        valuesC.push(element.value)
+                        labelsC.push(element.timeCreated)
+                    });
+
+                    labelsC.reverse()
+                    valuesC.reverse()
+
+                    for (i = 0; i < labelsC.length; i++) {
+                        labelsC[i] = timestampToDate(labelsC[i]) + " " + timestampToHoursAndMinutes(labelsC[i]);
+                    }
+                    for (i = 0; i < valuesC.length; i++) {
+                        if (Number(valuesC[i]) > maxVerdi) { maxVerdi = Number(valuesC[i]); }
+                        if (Number(valuesC[i]) < minVerdi) { minVerdi = Number(valuesC[i]); }
+                        gjennomsnitt += valuesC[i];
+                    }
+                    document.getElementById("minverdi").innerHTML = "Minste verdi: ".bold() + minVerdi;
+                    document.getElementById("maxverdi").innerHTML = "Største verdi: ".bold() + maxVerdi;
+                    document.getElementById("snitt").innerHTML = "Gjennomsnitt: ".bold() + (gjennomsnitt / labelsC.length).toFixed(2);
+                    document.getElementById("myDiv4").style.display = "block";
+                    var ctx = document.getElementById("myChart111").getContext('2d');
+                    var myLineChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labelsC,
+                            datasets: [{
+                                label: "turbiditet i %",
+                                borderColor: 'deepskyblue',
+                                data: valuesC,
+                                fill: false,
+                            }]
+                        },
+                        options: {
+                            layout: {
+                                padding: {
+                                    bottom: 10
+
+                                }
+                            },
+                            elements: {
+                                line: {
+                                    tension: 0,
+                                },
+
+                            },
+
+                        }
+                    });
+
+                });
+
+        }
+        function compareValues(from, to) {
+            fetch('https://vannovervakning.com/api/v1/measurements/3/' + from + '/' + to)
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (result) {
+                    timestampToHoursAndMinutes(result);
+                    timestampToDate(result);
+
+                    var labelsC2 = []
+                    var valuesC2 = []
+                    var maxVerdi2 = 0;
+                    var minVerdi2 = 100;
+                    var gjennomsnitt2 = 0;
+
+
+                    var res = result.data.CONDUCTIVITY.forEach(element => {
+                        valuesC2.push(element.value)
+                        labelsC2.push(element.timeCreated)
+                    });
+
+                    labelsC2.reverse()
+                    valuesC2.reverse()
+
+                    for (i = 0; i < labelsC2.length; i++) {
+                        labelsC2[i] = timestampToDate(labelsC2[i]) + " " + timestampToHoursAndMinutes(labelsC2[i]);
+                    }
+                    for (i = 0; i < valuesC2.length; i++) {
+                        if (Number(valuesC2[i]) > maxVerdi2) { maxVerdi2 = Number(valuesC2[i]); }
+                        if (Number(valuesC2[i]) < minVerdi2) { minVerdi2 = Number(valuesC2[i]); }
+                        gjennomsnitt2 += valuesC2[i];
+                    }
+                    document.getElementById("minverdi2").innerHTML = "Minste verdi: ".bold() + minVerdi2;
+                    document.getElementById("maxverdi2").innerHTML = "Største verdi: ".bold() + maxVerdi2;
+                    document.getElementById("snitt2").innerHTML = "Gjennomsnitt: ".bold() + (gjennomsnitt2 / labelsC2.length).toFixed(2);
+
+                    var ctx2 = document.getElementById("myChart222").getContext('2d');
+                    var myLineChart = new Chart(ctx2, {
+                        type: 'line',
+                        data: {
+                            labels: labelsC2,
+                            datasets: [{
+                                label: "turbiditet gruppe 3",
+                                borderColor: 'deepskyblue',
+                                data: valuesC2,
+                                fill: false,
+                            }]
+                        },
+                        options: {
+                            layout: {
+                                padding: {
+                                    bottom: 10
+
+                                }
+                            },
+                            elements: {
+                                line: {
+                                    tension: 0,
+                                },
+
+                            }
+                        }
+                    });
+
+                });
+        }
+
+        function showTable() {
+            if (document.getElementById("myDiv").style.display == "block") { document.getElementById("myDiv").style.display = "none" }
+            else { document.getElementById("myDiv").style.display = "block"; }
+        }
+        function showComp() {
+            if (document.getElementById("myDiv2").style.display == "block") {
+                document.getElementById("myDiv2").style.display = "none";
+                document.getElementById("myDiv3").style.display = "none";
+                document.getElementById("myDiv4").style.display = "block";
+            }
+            else {
+                document.getElementById("myDiv2").style.display = "block";
+                document.getElementById("myDiv3").style.display = "block";
+                document.getElementById("myDiv4").style.display = "none";
+            }
+        }
+
+
+        function timestampToHoursAndMinutes(timestamp) {
+            var javaScriptRelease = Date.parse(timestamp);
+            var date = new Date(javaScriptRelease);
+            var hours = date.getHours();
+            var minutes = date.getMinutes();
+            if (minutes < 10) {
+                minutes = '0' + date.getMinutes()
+            }
+            return hours + ":" + minutes;
+        }
+
+        function timestampToDate(timestamp) {
+            var javaScriptRelease = Date.parse(timestamp);
+            var date = new Date(javaScriptRelease);
+            return date.getDate() + "." + date.getMonth() + "." + date.getFullYear();
+        }
+    </script>
+
+    <script>
+
+        function tableInterval(from, to) {
+            var str = 'https://vannovervakning.com/api/v1/measurements/4/' + from + '/' + to
+            $("#userdata tr>td").remove();
+            var data = [];
+            var time = [];
+            var avrundetTid = [];
+            $(function () {
+                $.getJSON(str, function (data) {
+                    $.each(data.data.TURBIDITY, function (i, f) {
+                        time = f.timeCreated.split("T");
+                        avrundetTid = time[1].split(":");
+                        var tblRow = "<tr>" + "<td>" + f.value + "</td>" +
+                            "<td>" + avrundetTid[0] + ":" + avrundetTid[1] + "</td>" + "<td>" + time[0] + "</td>" + "</tr>"
+                        $(tblRow).appendTo("#userdata tbody");
+                    });
+                });
+            });
+        }
+
+    </script>
+    <script>
+        function printOut() {
+            $("#userdata").tableHTMLExport({ type: 'pdf', filename: 'turbiditet.pdf' });
+        }
+        function buttondownload() {
+            var canvas3 = document.getElementById("myChart111");
+            var link2 = document.getElementById('link');
+            link2.setAttribute('download', 'Turbiditet.png');
+            link2.setAttribute('href', canvas3.toDataURL("image/png").replace("image/png", "image/octet-stream"));
+            link2.click();
+        }
+    </script>
+
+    <div class="header">
+        <h2>TURBIDITET</h2>
+    </div>
+
+    <div class="row">
+        <div class="column left" style="background-color:#fff;">
+            <h2>Graf</h2>
+            <div class="container9">
+                <div class="containerChart9">
+                    <canvas id="myChart111"></canvas>
+                    <div style="display:none" id="myDiv2">
+                        <canvas id="myChart222"></canvas>
+
+                        max/min verdier for turbiditet i denne perioden:
+                    </div>
+                    <div class="row">
+                        <div class="column2" id="maxverdi"></div>
+                        <div class="column2" id="minverdi"></div>
+                        <div class="column2" id="snitt"></div>
+                    </div>
+                    <div style="display:none" id="myDiv4">
+                        <div style="display:none">
+                            <a id="link" href=""></a>
+                        </div>
+                        <button onclick="buttondownload()">lagre graf</button>
+                    </div>
+                    <div style="display:none" id="myDiv3">
+                        max/min verdier for turbiditet i denne perioden for gruppe 3:
+                        <div class="row">
+                            <div class="column2" id="maxverdi2"></div>
+                            <div class="column2" id="minverdi2"></div>
+                            <div class="column2" id="snitt2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="column right" style="background-color:#fff;">
+            <h2>Velg intervall</h2>
+            <div class="row">
+                <div class='col-sm-6'>
+                    <form>
+                        <div class="form-group">
+                            <div class='input-group date' id='datepickerC'>
+                                <input type='text' class="form-control" />
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js" defer></script>
+            <script>
+                function updateInterval() {
+                    from = $("#datepickerC").datepicker("getDate")
+                    to = $("#datepickerC2").datepicker("getDate")
+                    if (from !== null && to !== null) {
+                        fetchAndDisplayDataFromTo(from.getTime(), to.getTime() + (23 * 60 + 59) * 60 * 1000);
+                        tableInterval(from.getTime(), to.getTime() + (23 * 60 + 59) * 60 * 1000);
+                        compareValues(from.getTime(), to.getTime() + (23 * 60 + 59) * 60 * 1000);
+                    }
+                }
+                $(function () {
+                    $('#datepickerC').datepicker({
+                        format: "dd/mm/yyyy",
+                        autoclose: true,
+                        todayHighlight: true,
+                        showOtherMonths: true,
+                        selectOtherMonths: true,
+                        autoclose: true,
+                        changeMonth: true,
+                        changeYear: true,
+                        orientation: "button"
+                    });
+                    $("#datepickerC").on("changeDate", function () {
+                        updateInterval();
+                    });
+                });
+            </script>
+            <div class="containerII">
+                <div class="row">
+                    <div class='col-sm-6'>
+                        <form>
+                            <div class="form-group">
+                                <div class='input-group date' id='datepickerC2'>
+                                    <input type='text' class="form-control" />
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <script>
+                $(function () {
+                    $('#datepickerC2').datepicker({
+                        format: "dd/mm/yyyy",
+                        autoclose: true,
+                        todayHighlight: true,
+                        showOtherMonths: true,
+                        selectOtherMonths: true,
+                        autoclose: true,
+                        changeMonth: true,
+                        changeYear: true,
+                        orientation: "button"
+                    });
+                    $("#datepickerC2").on("changeDate", function () {
+                        updateInterval();
+                    });
+                });
+            </script>
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js" defer></script>
+
+    </div>
+    <button onclick="showTable()" style="margin:0;">Vis tabell</button>
+    <button onclick="showComp()" style="margin:0">Sammenlign verdier</button>
+    <div style="display:none" id="myDiv">
+        <div class="wrapper">
+            <div class="profile">
+
+                <table id="userdata" border="2" style="float: none" align="center" align-content="center">
+                    <h2>Tabell</h2>
+                    <thead>
+                    <th>Verdi</th>
+                    <th>Tidspunkt</th>
+                    <th>dato</th>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+            </div>
+        </div>
+        <button onclick="printOut()" style="margin:0">lagre tabell</button>
+    </div>
+
+</body>
+</html>

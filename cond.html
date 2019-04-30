@@ -1,0 +1,185 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Konduktivitet</title>
+    <link rel="stylesheet" type="text/css" href="cond.css">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker3.css" rel="stylesheet" id="bootstrap-css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+    <!--JavaScript Code-->
+    <script>
+        function fetchAndDisplayDataFromTo(from, to) {
+            fetch('https://vannovervakning.com/api/v1/measurements/4/' + from + '/' + to)
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (result) {
+                timestampToHoursAndMinutes(result);
+                timestampToDate(result);
+
+                var labelsC = []
+                var valuesC = []
+                var month = []
+                var tid = 0;
+
+
+                var res = result.data.CONDUCTIVITY.forEach(element => {
+                    valuesC.push(element.value)
+                    labelsC.push(element.timeCreated)
+                });
+
+                labelsC.reverse()
+                valuesC.reverse()
+
+                for (i = 0; i < labelsC.length; i++) {
+                    month = labelsC[i].split("-")
+                    month[1] = Number(month[1]) + Number(1);
+                    tid = month[0] + month[1] + month[2];
+                    labelsC[i] = timestampToDate(tid) + " " + timestampToHoursAndMinutes(labelsC[i]);
+                }
+
+                var ctx = document.getElementById("myChart111").getContext('2d');
+                var myLineChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labelsC,
+                        datasets: [{
+                            label: "Konduktivitet",
+                            fill: false,
+                            borderColor: 'rgb(130, 177, 255)',
+                            data: valuesC,
+                        }]
+                    },
+                    options: {
+                        layout: {
+                            padding: {
+                                bottom: 10
+
+                            }
+                        }
+                    }
+                });
+
+            });
+        }
+
+
+        function timestampToHoursAndMinutes(timestamp) {
+            var javaScriptRelease = Date.parse(timestamp);
+            var date = new Date(javaScriptRelease);
+            var hours = date.getHours();
+            var minutes = date.getMinutes();
+            if (minutes < 10) {
+                minutes = '0' + date.getMinutes()
+            }
+            return hours + ":" + minutes;
+        }
+
+        function timestampToDate(timestamp) {
+            var javaScriptRelease = Date.parse(timestamp);
+            var date = new Date(javaScriptRelease);
+            return date.getDate() + "." + date.getMonth() + "." + date.getFullYear();
+        }
+        
+    </script>
+
+    <!--Page Layout Start-->
+
+    <div class="containerI">
+        <div class="row1">
+            <h2>Velg ønsket intervall</h2>
+        </div>
+        <div class="row1">
+            <div class='col-sm-6'>
+                <form>
+                    <div class="form-group">
+                        <div class='input-group date' id='datepickerC'>
+                            <input type='text' class="form-control" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js" defer></script>
+    <script>
+    function updateInterval() {
+      from = $("#datepickerC").datepicker("getDate")
+      to = $("#datepickerC2").datepicker("getDate")
+      if (from !== null && to !== null) {
+        fetchAndDisplayDataFromTo(from.getTime(), to.getTime() + (23*60 + 59)*60*1000);
+      }
+    }
+      $(function () {
+          $('#datepickerC').datepicker({
+              format: "dd/mm/yyyy",
+              autoclose: true,
+              todayHighlight: true,
+            showOtherMonths: true,
+            selectOtherMonths: true,
+            autoclose: true,
+            changeMonth: true,
+            changeYear: true,
+            orientation: "button"
+          });
+          $("#datepickerC").on("changeDate", function () {
+            updateInterval();
+          });
+      });
+    </script>
+    <div class="containerII">
+        <div class="row1">
+            <div class='col-sm-6'>
+                <form>
+                    <div class="form-group">
+                        <div class='input-group date' id='datepickerC2'>
+                            <input type='text' class="form-control" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js" defer></script>
+    <script>
+        $(function () {
+            $('#datepickerC2').datepicker({
+                format: "dd/mm/yyyy",
+                autoclose: true,
+                todayHighlight: true,
+              showOtherMonths: true,
+              selectOtherMonths: true,
+              autoclose: true,
+              changeMonth: true,
+              changeYear: true,
+              orientation: "button"
+            });
+            $("#datepickerC2").on("changeDate", function () {
+              updateInterval();
+            });
+        });
+    </script>
+
+    <h1> Intervall </h1>
+    <div class="container9">
+        <div class="containerChart9">
+            <canvas id="myChart111"></canvas>
+        </div>
+    </div>
+
+
+    <script src="cond.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js" defer></script>
+</body>
+</html>

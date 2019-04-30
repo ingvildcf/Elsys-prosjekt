@@ -1,0 +1,346 @@
+﻿<!DOCTYPE html>
+<html lang="no">
+<head>
+    <!-- <script type="text/javascript" src="JavaScript1.js"></script> -->
+    <link rel="stylesheet" type="text/css" href="Design.css">
+    <link rel="stylesheet" type="text/css" href="Designundersider.css">
+    <link rel="stylesheet" type="text/css" href="test.css">
+    <link rel="shortcut icon" href="logo.png" type="image/x-icon">
+    <title> Vikelva vannovervåking </title>
+
+    <!-- Load an icon library -->
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css' integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
+
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker3.css" rel="stylesheet" id="bootstrap-css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .chip {
+            display: inline-block;
+            padding: 0 25px;
+            height: 50px;
+            font-size: 16px;
+            line-height: 50px;
+            border-radius: 25px;
+            background-color: #f1f1f1;
+        }
+        .chip img {
+            float: left;
+            margin: 0 10px 0 -25px;
+            height: 50px;
+            width: 50px;
+            border-radius: 50%;
+        }
+        .mySlides {
+            margin-top: 70px;
+            margin-left: 188px;
+            width: 900px;
+            position: center;
+        }
+
+        .text {
+            margin-left: 70px;
+            margin-right: 70px;
+        }
+        .figurer {
+            margin-left: 100px;
+            margin-right: auto;
+            width: 100%;
+        }
+
+        .w3-button {
+            margin-top: 300px;
+        }
+       .column3 {
+            width: 33.3%;
+            margin-bottom: 16px;
+            padding: 0 8px;
+            padding-top: 200px;
+            position:absolute;
+            top:200px;
+            bottom:auto;
+
+        }
+
+        @media screen and (max-width: 650px) {
+            .column3 {
+                width: 100%;
+                display: block;
+
+            }
+        }
+
+        .card {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 90%;
+            margin-bottom: 30px;
+            padding-bottom: 50px;
+        }
+
+        .container {
+            padding: 0 16px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 85%;
+        }
+
+        .container::after, .row::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+
+        .title {
+            color: grey;
+        }
+        .w3-modal {
+            padding-top: 25px;
+        }
+    </style>
+
+</head>
+
+
+
+<body>
+
+    <div class="navbaren">
+        <a href="index.html"><i class="fa fa-fw fa-home"></i> HJEM</a>
+        <a href="Sisteverdier.html"><i class="fa fa-fw fa-user"></i> SISTE MÅLINGER</a>
+        <a href="Konduktivitet.html"><i class="fab fa-cloudscale"></i> KONDUKTIVITET</a>
+        <a href="Turbiditet.html"><i class="fas fa-oil-can"></i> TURBIDITET</a>
+        <a href="pH.html"><i class="fas fa-flask"></i> PH</a>
+        <a href="Temperatur.html"><i class="fas fa-thermometer-half"></i> TEMPERATUR</a>
+        <a class="active" href="Omoss.html"><i class="fa fa-fw fa-envelope"></i> OM OSS</a>
+
+    </div>
+    <div class="header">
+        <h2>Om prosjektet</h2>
+    </div>
+    <div class="text">
+        <p>
+            Miljøenheten i Trondheim måler i dag diverse parametere i elvene rundt om i Trondheim. Det er en tidkrevende prosess, og det er mange målepunkter. På grunn av dette kan det gå opp til en måned mellom hver gang de får kontrollert de forskjellige elvene. Dersom det kommer farlige stoffer i elven kan det derfor ta lang tid før dette blir oppdaget og stoppet. Om farlige utslipp ikke blir oppdaget kan det føre til negative effekter på miljøet i og rundt elvene.
+
+            Dette er et særlig problem i Vikelva ved vannrenseanlegget til Trondheim der marmorslam fra renseprosessen skylles ut.
+            Denne prosessen er regulert, men miljøenheten ser tydelig påvirkningen dette utslippet har på miljøet i elva.
+
+            Miljøenheten i Trondheim ga derfor denne problemstillingen til studentene som startet på “Elektronisk systemdesign og innovasjon” ved NTNU høsten 2017. Prosjektet startet første semester, men det endelige systemet har hovedsakelig blitt utarbeidet i fjerde semester.
+
+            Løsningen ble et sensorsystem som er plassert ved et bestemt målepunkt i Vikelva som sender parameterverdier kontinuerlig. Sensorene skal kunne overvåke fire forskjellige parametere: pH, konduktivitet, turbiditet og temperatur.
+
+            Systemet er ment som et supplement til målingene som allerede blir utført av miljøenheten. Derfor er hovedfokuset til systemet å kunne se etter store endringer i noen gitte parameter, ikke nøyaktighet i målingene.
+
+        </p>
+        <a href="https://github.com/torsteinnh/elsysPG4-19">lenke til teknisk beskrivelse av prosjektet</a>
+    </div>
+    <p>
+        <!--Slideshow-->
+        <img class="mySlides" src="helhetsbilde.jpg">
+        <img class="mySlides" src="SketchSensor.jpg">
+        <img class="mySlides" src="bilde1.jpg">
+        <img class="mySlides" src="bilde2.jpg">
+        <img class="mySlides" src="bilde3.jpg">
+        <img class="mySlides" src="bilde4.jpg">
+        <img class="mySlides" src="festetRor.jpg">
+        <img class="mySlides" src="heleRor.jpg">
+        <img class="mySlides" src="skapInni-min.jpg">
+
+
+        <button class="w3-button w3-display-left" onclick="plusDivs(-1)">&#10094;</button>
+        <button class="w3-button w3-display-right" onclick="plusDivs(+1)">&#10095;</button>
+    </p>
+
+
+    <script>
+        var slideIndex = 1;
+        showDivs(slideIndex);
+
+        function plusDivs(n) {
+            showDivs(slideIndex += n);
+        }
+
+        function showDivs(n) {
+            var i;
+            var x = document.getElementsByClassName("mySlides");
+            if (n > x.length) { slideIndex = 1 }
+            if (n < 1) { slideIndex = x.length };
+            for (i = 0; i < x.length; i++) {
+                x[i].style.display = "none";
+            }
+            x[slideIndex - 1].style.display = "block";
+        }
+    </script>
+
+    <div class="text">
+        <div class="figurer">
+            <div class="chip" onclick="document.getElementById('id01').style.display='block'">
+                <img src="torunn.png" alt="Person" width="100" height="100">
+                Torunn
+            </div>
+            <div class="chip" onclick="document.getElementById('id02').style.display='block'">
+                <img src="ingvild.png" alt="Person" width="96" height="96">
+                Ingvild
+            </div>
+            <div class="chip" onclick="document.getElementById('id03').style.display='block'">
+                <img src="markus.png" alt="Person" width="96" height="96">
+                Markus
+            </div>
+            <div class="chip" onclick="document.getElementById('id04').style.display='block'">
+                <img src="stian.png" alt="Person" width="96" height="96">
+                Stian
+            </div>
+            <div class="chip" onclick="document.getElementById('id05').style.display='block'">
+                <img src="avatar12.png" alt="Person" width="96" height="96">
+                Matias
+            </div>
+            <div class="chip" onclick="document.getElementById('id06').style.display='block'">
+                <img src="maren.png" alt="Person" width="96" height="96">
+                Maren
+            </div>
+            <div class="chip" onclick="document.getElementById('id07').style.display='block'">
+                <img src="torstein.png" alt="Person" width="96" height="96">
+                Torstein
+            </div>
+        </div>
+
+        <div id="id01" class="w3-modal">
+            <div class="w3-modal-content" style="width:40%">
+                <div class="w3-container">
+                    <span onclick="document.getElementById('id01').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+
+                    <div class="column">
+                        <div class="card">
+                            <img src="torunn.png" alt="Person" style="width:70%">
+                            <div class="container">
+                                <h2>Torunn Røraas</h2>
+                                <p class="title">CEO</p>
+                                <p>torunror@stud.ntnu.no</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="id02" class="w3-modal">
+            <div class="w3-modal-content" style="width:40%">
+                <div class="w3-container">
+                    <span onclick="document.getElementById('id02').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+
+                    <div class="column">
+                        <div class="card">
+                            <img src="ingvild.png" alt="Person" style="width:70%">
+                            <div class="container">
+                                <h2>Ingvild Fleisje</h2>
+                                <p class="title">Nettside</p>
+                                <p>ingvilcf@stud.ntnu.no</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="id03" class="w3-modal">
+            <div class="w3-modal-content" style="width:40%">
+                <div class="w3-container">
+                    <span onclick="document.getElementById('id03').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+
+                    <div class="column">
+                        <div class="card">
+                            <img src="markus.png" alt="Person" style="width:70%">
+                            <div class="container">
+                                <h2>Markus Gunnarsson</h2>
+                                <p class="title"> Sensorer </p>
+                                <p>markussg@stud.ntnu.no</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="id04" class="w3-modal">
+            <div class="w3-modal-content" style="width:40%">
+                <div class="w3-container">
+                    <span onclick="document.getElementById('id04').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+
+                    <div class="column">
+                        <div class="card">
+                            <img src="stian.png" alt="Person" style="width:70%">
+                            <div class="container">
+                                <h2>Stian Hope</h2>
+                                <p class="title"> Deep Sleep </p>
+                                <p>stianhop@stud.ntnu.no</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="id05" class="w3-modal">
+            <div class="w3-modal-content" style="width:40%">
+                <div class="w3-container">
+                    <span onclick="document.getElementById('id05').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+
+                    <div class="column">
+                        <div class="card">
+                            <img src="avatar12.png" alt="Person" style="width:70%">
+                            <div class="container">
+                                <h2>Matias Haugum</h2>
+                                <p class="title"> Design </p>
+                                <p>matiah@stud.ntnu.no</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="id06" class="w3-modal">
+            <div class="w3-modal-content" style="width:40%">
+                <div class="w3-container">
+                    <span onclick="document.getElementById('id06').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+
+                    <div class="column">
+                        <div class="card">
+                            <img src="maren.png" alt="Person" style="width:70%">
+                            <div class="container">
+                                <h2>Maren Fossum</h2>
+                                <p class="title"> Nettside </p>
+                                <p>marenvf@stud.ntnu.no</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="id07" class="w3-modal">
+            <div class="w3-modal-content" style="width:40%">
+                <div class="w3-container">
+                    <span onclick="document.getElementById('id07').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+
+                    <div class="column">
+                        <div class="card">
+                            <img src="torstein.png" alt="Person" style="width:75%">
+                            <div class="container">
+                                <h2>Torstein Nordgård-Hansen</h2>
+                                <p class="title"> Hardware </p>
+                                <p>torsteno@stud.ntnu.no</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>

@@ -1,0 +1,150 @@
+﻿.container9 {
+    padding: 2px 16px;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.containerChart9 {
+    width: 80%;
+}
+
+.row1 {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    width: 40%;
+}
+
+
+
+
+
+a {
+    font-size: larger;
+    font: bold;
+    /*border-bottom: 5px black;*/
+}
+
+li {
+    display: inline-block;
+}
+
+    li:last-child {
+        border-right: none;
+    }
+
+.active {
+    background-color: #2E9AFE;
+    text-decoration: solid;
+    font-style: normal;
+}
+
+
+h2 {
+    color: black;
+}
+
+p {
+    color: black;
+}
+
+
+.navbaren {
+    width: 100%;
+    background-color: darkorange;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    height: 39px;
+}
+
+    .navbaren a {
+        float: left;
+        padding: 12px;
+        color: white;
+        font-size: 10px;
+        width: 14.28571428571428%;
+        text-align: center;
+        text-decoration: none;
+        border-right: 1px;
+        border-color: ghostwhite;
+    }
+
+        .navbaren a:hover {
+            background-color: orangered;
+            color: white;
+            text-decoration: none;
+        }
+
+        .navbaren a:active {
+            background-color: orangered;
+            color: black;
+        }
+
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.header {
+    
+    font-size: 50px;
+    text-align: center;
+    background: white;
+    margin-top: 60px;
+    margin-bottom: 20px;
+}
+
+h2 {
+    padding-left: 60px;
+    font-weight: bold;
+}
+
+/* Create two unequal columns that floats next to each other */
+/* Left column */
+.leftcolumn {
+    float: left;
+    width: 70%;
+}
+
+/* Right column */
+.rightcolumn {
+    float: left;
+    width: 30%;
+    padding-left: 1500px;
+}
+
+.card {
+    background-color: white;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+
+/* Responsive layout - when the screen is less than 800px wide, make the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 800px) {
+    .leftcolumn, .rightcolumn {
+        width: 100%;
+        padding: 0;
+    }
+}
+
+.update {
+    width: 50px;
+}
+
+
+/*table*/
+
+
+table{
+    width: 60%;
+    align-self: center;
+}
+
+.wrapper{
+    margin-left: 60px;
+}
